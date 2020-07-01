@@ -1,10 +1,11 @@
 name: Checks
 
 on:
+  workflow_dispatch:
   push:
-    branches: [master]
+    branches:
+      - master
   pull_request:
-    branches: [master]
 
 jobs:
   prettier:
@@ -13,52 +14,118 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
-        run: |
-          npm install
+          node-version: 16
+          cache: 'yarn'
       - name: Run Prettier
         run: |
-          npm run format:check
+          yarn install
+          yarn format:check
 
   css:
     name: StyleLint
     runs-on: ubuntu-latest
-    if: always()
+    if: success() || failure()
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
-        run: |
-          npm install
+          node-version: 16
+          cache: 'yarn'
       - name: Run StyleLint
         run: |
-          npm run lint:check
+          yarn install
+          yarn stylelint:check
 
   html:
-    name: HTML Validator
+    name: HTML Hint
     runs-on: ubuntu-latest
-    if: always()
+    if: success() || failure()
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
+          node-version: 16
+          cache: 'yarn'
+      - name: Run HTML Hint
         run: |
-          npm install
-      - name: Run HTML Validator
+          yarn install
+          yarn lint:html
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    if: success() || failure()
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Run Eslint
         run: |
-          npm run html-validator
+          yarn
+          yarn eslint:check
+
+  accessibility-check:
+    name: Accessibility Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Run Accessibility Check
+        id: accessibility
+        if: success() || failure()
+        run: |
+          yarn install
+          yarn axe
+      - name: Create or Update Comment
+        if: success() || failure()
+        id: create-update-comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const existingComment = comments.find(comment => comment.body.match('## Accessibility Violations Check 🔎'));
+            console.log({ existingComment });
+            const fs = require('fs');
+            const commentBody = fs.readFileSync('accessibility_report.md', { encoding: 'utf8' });
+            const commentId = existingComment ? existingComment.id : null;
+            if (commentId) {
+              github.rest.issues.updateComment({
+                comment_id: commentId,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }

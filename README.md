@@ -21,44 +21,62 @@ Additional description about the project and its features.
 - Clone the project
 
 ```bash
-git clone https://github.com/user/html-css-template.git
+git clone https://github.com/user/js-template.git
 
 ```
 
 - Install Dependencies
 
 ```bash
-npm run install
+yarn install
 ```
 
 To run StyleLint by itself, you may run the lint task:
 
 ```bash
-npm run lint:check
+yarn stylelint:check
 ```
 
-Or to automatically fix issues found (where possible):
+Or to automatically fix issues found for StyleLint (where possible):
 
 ```bash
-npm run lint
+yarn stylelint
+```
+
+To run ESLint by itself, you may run the lint task:
+
+```bash
+yarn eslint:check
+```
+
+Or to automatically fix issues found for ESLint (where possible):
+
+```bash
+yarn eslint
 ```
 
 You can also check against Prettier:
 
 ```bash
-npm run format:check
+yarn format:check
 ```
 
 and to have it actually fix (to the best of its ability) any format issues, run:
 
 ```bash
-npm run format
+yarn format
 ```
 
-You can also check against HTML Validator:
+You can also check against HTML Validator (htmlhint):
 
 ```bash
-npm run html-validator
+yarn lint:html
+```
+
+To generate accessibility report for this webpage, run the below command, it uses axe:
+
+```bash
+yarn axe
 ```
 
 ## Style Guides
@@ -67,6 +85,7 @@ npm run html-validator
 - [HTML Style Guide](http://udacity.github.io/frontend-nanodegree-styleguide/index.html)
 - [JavaScript Style Guide](http://udacity.github.io/frontend-nanodegree-styleguide/javascript.html)
 - [Git Style Guide](https://udacity.github.io/git-styleguide/)
+- [AXE Accessibility Style Guide](https://dequeuniversity.com/rules/axe/html/4.7)
 
 ## 👤 Author
 
