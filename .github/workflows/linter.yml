@@ -1,62 +1,66 @@
 name: Checks
 
-on:
-  push:
-    branches: [master]
-  pull_request:
+on: [pull_request, push]
 
 jobs:
   prettier:
     name: Prettier
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
-        run: |
-          npm install
+          node-version: 16
       - name: Run Prettier
         run: |
-          npm run format:check
+          yarn
+          yarn format:check
 
-  stylelint:
+  css:
     name: StyleLint
     runs-on: ubuntu-latest
     if: always()
-
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
-        run: |
-          npm install
+          node-version: 16
       - name: Run StyleLint
         run: |
-          npm run stylelint:check
+          yarn
+          yarn stylelint:check
 
   eslint:
     name: ESLint
-    runs-on: ubuntu-18.04
-    if: always()
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
-      - name: Set up Node 12.x
-        uses: actions/setup-node@v1
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 12.x
-      - name: Install required dependency for node
+          node-version: 16
+      - name: Run Eslint
         run: |
-          npm install
-      - name: ESLint Report
-        run: npm run eslint:check
+          yarn
+          yarn eslint:check
+
+  webhint:
+    name: Webhint
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Webhint Report
+        run: |
+          yarn
+          yarn webhint
