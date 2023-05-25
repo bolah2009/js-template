@@ -26,3 +26,6 @@ yarn-error.log*
 
 # Webhint report
 hint-report
+
+# Ignore accessibility report
+accessibility_report.md

@@ -13,6 +13,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: 'yarn'
       - name: Run Prettier
         run: |
           yarn
@@ -29,6 +30,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: 'yarn'
       - name: Run StyleLint
         run: |
           yarn
@@ -44,15 +46,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          cache: 'yarn'
       - name: Run Eslint
         run: |
           yarn
           yarn eslint:check
 
-  webhint:
-    name: Webhint
+  html:
+    name: HTML Hint
     runs-on: ubuntu-latest
-    if: always()
+    if: success() || failure()
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -60,7 +64,44 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Webhint Report
+          cache: 'yarn'
+      - name: Run HTML Hint
         run: |
-          yarn
-          yarn webhint
+          yarn install
+          yarn lint:html
+
+  accessibility-check:
+    name: Accessibility Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Run Accessibility Check
+        id: accessibility
+        if: success() || failure()
+        run: |
+          yarn install
+          yarn axe
+
+      - name: Create Comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const commentBody = fs.readFileSync('accessibility_report.md', { encoding: 'utf8' });
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            })

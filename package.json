@@ -1,32 +1,36 @@
 {
   "name": "js-template",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^8.35.0",
+    "axe-core": "^4.7.2",
+    "axe-puppeteer": "^1.1.1",
+    "eslint": "^8.41.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.4",
-    "stylelint": "^15.2.0",
+    "htmlhint": "^1.1.4",
+    "prettier": "2.8.8",
+    "puppeteer": "^20.4.0",
+    "stylelint": "^15.6.2",
     "stylelint-config-prettier": "^9.0.5",
-    "stylelint-config-recommended": "^10.0.1",
-    "stylelint-config-standard": "^30.0.1",
+    "stylelint-config-recommended": "^12.0.0",
+    "stylelint-config-standard": "^33.0.0",
     "stylelint-csstree-validator": "^2.1.0",
-    "stylelint-prettier": "^3.0.0",
-    "stylelint-scss": "^4.4.0"
+    "stylelint-prettier": "^3.0.0"
   },
   "scripts": {
     "format": "npx prettier  --write \"**/*.{html,json,md,yaml,yml}\"",
     "format:check": "npx prettier  --check \"**/*.{html,json,md,yaml,yml}\"",
-    "webhint": "npx hint --telemetry=off .",
     "lint": "npx stylelint \"**/*.css\" --fix && npx eslint . --fix",
     "lint:check": "npx stylelint \"**/*.css\" && npx eslint .",
     "stylelint": "npx stylelint \"**/*.css\" --fix",
     "stylelint:check": "npx stylelint \"**/*.css\"",
     "eslint": "npx eslint . --fix",
-    "eslint:check": "npx eslint ."
+    "eslint:check": "npx eslint .",
+    "axe": "node axe-check.js",
+    "lint:html": "htmlhint ."
   }
 }
