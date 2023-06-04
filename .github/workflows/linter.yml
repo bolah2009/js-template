@@ -1,11 +1,17 @@
 name: Checks
 
-on: [pull_request, push]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   prettier:
     name: Prettier
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -16,13 +22,14 @@ jobs:
           cache: 'yarn'
       - name: Run Prettier
         run: |
-          yarn
+          yarn install
           yarn format:check
 
   css:
     name: StyleLint
     runs-on: ubuntu-latest
-    if: always()
+    if: success() || failure()
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
@@ -33,24 +40,8 @@ jobs:
           cache: 'yarn'
       - name: Run StyleLint
         run: |
-          yarn
+          yarn install
           yarn stylelint:check
-
-  eslint:
-    name: ESLint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
-      - name: Run Eslint
-        run: |
-          yarn
-          yarn eslint:check
 
   html:
     name: HTML Hint
@@ -70,13 +61,28 @@ jobs:
           yarn install
           yarn lint:html
 
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    if: success() || failure()
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Run Eslint
+        run: |
+          yarn
+          yarn eslint:check
+
   accessibility-check:
     name: Accessibility Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Checkout 🛎️
@@ -92,16 +98,34 @@ jobs:
         run: |
           yarn install
           yarn axe
-
-      - name: Create Comment
+      - name: Create or Update Comment
+        if: success() || failure()
+        id: create-update-comment
         uses: actions/github-script@v6
         with:
           script: |
-            const fs = require('fs');
-            const commentBody = fs.readFileSync('accessibility_report.md', { encoding: 'utf8' });
-            github.rest.issues.createComment({
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: commentBody
-            })
+              repo: context.repo.repo
+            });
+            const existingComment = comments.find(comment => comment.body.match('## Accessibility Violations Check 🔎'));
+            console.log({ existingComment });
+            const fs = require('fs');
+            const commentBody = fs.readFileSync('accessibility_report.md', { encoding: 'utf8' });
+            const commentId = existingComment ? existingComment.id : null;
+            if (commentId) {
+              github.rest.issues.updateComment({
+                comment_id: commentId,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }

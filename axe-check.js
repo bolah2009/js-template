@@ -13,16 +13,28 @@ async function runAccessibilityCheck() {
   await browser.close();
 
   const { violations } = results;
+  let report = '## Accessibility Violations Check 🔎\n\n';
 
   if (violations.length === 0) {
     console.log('No accessibility violations found.');
+    report += '### ✅ No accessibility violations found.\n\n';
   } else {
     console.log('Accessibility violations found:');
-    let report = '# Accessibility Violations\n\n';
+    report += '### ⏳ Accessibility violations found.\n\n';
     for (const violation of violations) {
-      report += `## ${violation.description}\n\n`;
+      report += `#### ${violation.description}\n\n`;
+
+      if (violation.impact === 'critical') {
+        report +=
+          '\n\n##### ❌ Critical accessibility violations found.\n\nSee comments below.\n\n';
+        console.error('Critical accessibility violations found.');
+        process.exitCode = 1; // Set exit code to indicate failure
+      } else {
+        report += '\n\n##### ✅ No critical accessibility violations found.\n\n';
+      }
+
       report += `[${violation.help}](${violation.helpUrl})\n\n`;
-      report += `- Impact: ${violation.impact}\n\n`;
+      report += `- Impact: **${violation.impact}**\n\n`;
       report += `- Tags: ${violation.tags.map((tag) => `\`${tag}\``).join(', ')}\n\n`;
       let nodes = '';
       for (const node of violation.nodes) {
@@ -33,11 +45,6 @@ async function runAccessibilityCheck() {
       report += `<details><summary>Click here for detailed report</summary>\n\n`;
       report += nodes;
       report += '</details>\n\n';
-
-      if (violation.impact === 'critical') {
-        console.error('Critical accessibility violations found.');
-        process.exitCode = 1; // Set exit code to indicate failure
-      }
     }
 
     fs.writeFileSync('accessibility_report.md', report, 'utf8');
