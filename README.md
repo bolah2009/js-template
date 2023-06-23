@@ -61,7 +61,7 @@ You can also check against Prettier:
 yarn format:check
 ```
 
-and to have it actually fix (to the best of its ability) any format issues, run:
+and to have it fix (to the best of its ability) any format issues, run:
 
 ```bash
 yarn format
@@ -73,7 +73,7 @@ You can also check against HTML Validator (htmlhint):
 yarn lint:html
 ```
 
-To generate accessibility report for this webpage, run the below command, it uses axe:
+To generate an accessibility report for this webpage, run the below command, it uses axe:
 
 ```bash
 yarn axe

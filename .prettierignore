@@ -1,0 +1,6 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore accessibility report
+accessibility_report.md

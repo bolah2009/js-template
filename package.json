@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": "please-use-yarn"
+  },
   "devDependencies": {
     "axe-core": "^4.7.2",
     "axe-puppeteer": "^1.1.1",
