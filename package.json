@@ -4,8 +4,7 @@
   "private": true,
   "dependencies": {},
   "engines": {
-    "node": ">=18.0.0",
-    "npm": "please-use-yarn"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "axe-core": "^4.8.2",
@@ -21,15 +20,14 @@
     "prettier": "3.0.3",
     "puppeteer": "^21.4.1",
     "stylelint": "^15.11.0",
-    "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-recommended": "^13.0.0",
     "stylelint-config-standard": "^34.0.0",
     "stylelint-csstree-validator": "^3.0.0",
     "stylelint-prettier": "^4.0.2"
   },
   "scripts": {
-    "format": "npx prettier  --write \"**/*.{html,json,md,yaml,yml}\"",
-    "format:check": "npx prettier  --check \"**/*.{html,json,md,yaml,yml}\"",
+    "format": "npx prettier --write \"**/*.{js,css,html,json,md,yaml,yml}\"",
+    "format:check": "npx prettier --check \"**/*.{js,css,html,json,md,yaml,yml}\"",
     "lint": "npx stylelint \"**/*.css\" --fix && npx eslint . --fix",
     "lint:check": "npx stylelint \"**/*.css\" && npx eslint .",
     "stylelint": "npx stylelint \"**/*.css\" --fix",
