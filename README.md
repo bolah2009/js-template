@@ -28,55 +28,55 @@ git clone https://github.com/user/js-template.git
 - Install Dependencies
 
 ```bash
-yarn install
+npm install
 ```
 
 To run StyleLint by itself, you may run the lint task:
 
 ```bash
-yarn stylelint:check
+npm run stylelint:check
 ```
 
 Or to automatically fix issues found for StyleLint (where possible):
 
 ```bash
-yarn stylelint
+npm run stylelint
 ```
 
 To run ESLint by itself, you may run the lint task:
 
 ```bash
-yarn eslint:check
+npm run eslint:check
 ```
 
 Or to automatically fix issues found for ESLint (where possible):
 
 ```bash
-yarn eslint
+npm run eslint
 ```
 
 You can also check against Prettier:
 
 ```bash
-yarn format:check
+npm run format:check
 ```
 
-and to have it fix (to the best of its ability) any format issues, run:
+and to have it fix (to the best of its ability) run:
 
 ```bash
-yarn format
+npm run format
 ```
 
 You can also check against HTML Validator (htmlhint):
 
 ```bash
-yarn lint:html
+npm run lint:html
 ```
 
 To generate an accessibility report for this webpage, run the below command, it uses axe:
 
 ```bash
-yarn axe
+npm run axe
 ```
 
 ## Style Guides

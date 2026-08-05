@@ -35,7 +35,7 @@
     "eslint": "npx eslint . --fix",
     "eslint:check": "npx eslint .",
     "axe": "node axe-check.js",
-    "lint:html": "htmlhint .",
-    "test": "jest"
+    "lint:html": "npx htmlhint .",
+    "test": "npx jest"
   }
 }

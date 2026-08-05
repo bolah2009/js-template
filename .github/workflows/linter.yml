@@ -13,112 +13,109 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
       - name: Run Prettier
-        run: |
-          yarn install
-          yarn format:check
+        run: npm run format:check
 
   css:
     name: StyleLint
     runs-on: ubuntu-latest
-    if: success() || failure()
+    needs: prettier
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
       - name: Run StyleLint
-        run: |
-          yarn install
-          yarn stylelint:check
+        run: npm run stylelint:check
 
   html:
     name: HTML Hint
     runs-on: ubuntu-latest
-    if: success() || failure()
+    needs: css
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
       - name: Run HTML Hint
-        run: |
-          yarn install
-          yarn lint:html
+        run: npm run lint:html
 
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
-    if: success() || failure()
+    needs: html
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-      - name: Run Eslint
-        run: |
-          yarn
-          yarn eslint:check
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run eslint:check
 
   test:
     name: Jest Test
     runs-on: ubuntu-latest
-    if: success() || failure()
+    needs: eslint
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-      - name: Run Eslint
-        run: |
-          yarn
-          yarn test
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Jest
+        run: npm test
 
   accessibility-check:
     name: Accessibility Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    needs: test
 
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
       - name: Run Accessibility Check
-        id: accessibility
-        if: success() || failure()
-        run: |
-          yarn install
-          yarn axe
+        run: npm run axe
       - name: Create or Update Comment
-        if: success() || failure()
-        id: create-update-comment
         uses: actions/github-script@v6
         with:
           script: |
@@ -128,7 +125,6 @@ jobs:
               repo: context.repo.repo
             });
             const existingComment = comments.find(comment => comment.body.match('## Accessibility Violations Check 🔎'));
-            console.log({ existingComment });
             const fs = require('fs');
             const commentBody = fs.readFileSync('accessibility_report.md', { encoding: 'utf8' });
             const commentId = existingComment ? existingComment.id : null;
